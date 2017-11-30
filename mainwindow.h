@@ -1,0 +1,36 @@
+﻿#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+
+class XYGraphicsView;
+class XYGraphicsScene;
+class XYCanvasGraphicsItem;
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    MainWindow(QWidget *parent = 0);
+    ~MainWindow();
+
+public slots:
+    void setShape(QAction *act);
+    void openPixmap();
+    void savePixmap();
+
+protected:
+    void closeEvent(QCloseEvent *event);
+
+private:
+    void initToolBar();
+
+private:
+    XYGraphicsView *view;
+    XYGraphicsScene *scene;
+    XYCanvasGraphicsItem *canvas;
+    QString          lastPixmapPath;
+
+};
+
+#endif // MAINWINDOW_H
