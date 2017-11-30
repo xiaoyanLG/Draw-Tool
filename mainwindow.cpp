@@ -81,7 +81,10 @@ void MainWindow::savePixmap()
 
         QPainter painter(&pixmap);
         scene->render(&painter);
-        pixmap.save(path, path.mid(path.lastIndexOf(".") + 1).toUpper().toLocal8Bit().data());
+        if (pixmap.save(path, path.mid(path.lastIndexOf(".") + 1).toUpper().toLocal8Bit().data()))
+        {
+            lastPixmapPath = path;
+        }
     }
 }
 
