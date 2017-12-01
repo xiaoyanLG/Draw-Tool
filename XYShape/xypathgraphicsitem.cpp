@@ -1,7 +1,7 @@
 ﻿#include "xypathgraphicsitem.h"
 
 XYPathGraphicsItem::XYPathGraphicsItem(const QPainterPath &path, QGraphicsItem *parent)
-    : XYGraphicsMovableItem(parent), moPath(path)
+    : XYMovableGraphicsItem(parent), moPath(path)
 {
 
 }
@@ -13,6 +13,17 @@ QRectF XYPathGraphicsItem::boundingRect() const
 
 void XYPathGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
 {
-    XYGraphicsMovableItem::paint(painter, option, w);
+    XYMovableGraphicsItem::paint(painter, option, w);
     painter->drawPath(moPath);
+}
+
+bool XYPathGraphicsItem::isValid()
+{
+    int w = moPath.controlPointRect().size().width();
+    int h = moPath.controlPointRect().size().height();
+    if (w * w + h * h < 5*5)
+    {
+        return false;
+    }
+    return true;
 }

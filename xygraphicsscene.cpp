@@ -2,6 +2,8 @@
 #include "xyrectgraphicsitem.h"
 #include "xypathgraphicsitem.h"
 #include "xyellipsegraphicsitem.h"
+#include "xylinegraphicsitem.h"
+#include "xyarrowsgraphicsitem.h"
 
 XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent)
     : QGraphicsScene(x, y, width, height, parent)
@@ -24,6 +26,11 @@ void XYGraphicsScene::setShape(XYGraphicsScene::SHAPE shape)
     meShape = shape;
 }
 
+void XYGraphicsScene::setItemMovable(bool movable)
+{
+    XYMovableGraphicsItem::acceptMouse = movable;
+}
+
 void XYGraphicsScene::savePixmap(const QString &path)
 {
     QPixmap pixmap;
@@ -34,7 +41,7 @@ void XYGraphicsScene::savePixmap(const QString &path)
 
 bool XYGraphicsScene::event(QEvent *event)
 {
-    static QGraphicsItem *item = NULL;
+    static XYShapeGraphicsItem *item = NULL;
     QGraphicsScene::event(event);
     if (event->isAccepted())
     {
@@ -70,8 +77,16 @@ bool XYGraphicsScene::event(QEvent *event)
             if (item)
             {
                 setGraphicsItemMovePos(item, mouse_event->scenePos());
+                setGraphicsItemEndPos(item, mouse_event->scenePos());
                 this->removeItem(item);
-                this->addItem(item);
+                if (item->isValid())
+                {
+                    this->addItem(item);
+                }
+                else
+                {
+                    delete item;
+                }
                 item = NULL;
             }
         }
@@ -88,9 +103,9 @@ bool XYGraphicsScene::event(QEvent *event)
     return true;
 }
 
-QGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
+XYShapeGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
 {
-    QGraphicsItem *item = NULL;
+    XYShapeGraphicsItem *item = NULL;
     switch (meShape)
     {
     case RECT:
@@ -102,6 +117,12 @@ QGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
     case ELLIPSE:
         item = new XYEllipseGraphicsItem;
         break;
+    case LINE:
+        item = new XYLineGraphicsItem;
+        break;
+    case ARROWS:
+        item = new XYArrowsGraphicsItem;
+        break;
     default:
         break;
     }
@@ -109,19 +130,10 @@ QGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
     return item;
 }
 
-void XYGraphicsScene::setGraphicsItemStartPos(QGraphicsItem *item, const QPointF &pos)
+void XYGraphicsScene::setGraphicsItemStartPos(XYShapeGraphicsItem *item, const QPointF &pos)
 {
     switch (meShape)
     {
-    case RECT:
-    {
-        XYRectGraphicsItem *rectItem = static_cast<XYRectGraphicsItem *>(item);
-        if (rectItem)
-        {
-            rectItem->startPos = pos;
-        }
-        break;
-    }
     case PATH:
     {
         XYPathGraphicsItem *pathItem = static_cast<XYPathGraphicsItem *>(item);
@@ -131,21 +143,36 @@ void XYGraphicsScene::setGraphicsItemStartPos(QGraphicsItem *item, const QPointF
         }
         break;
     }
+    case RECT:
     case ELLIPSE:
+    case LINE:
+        break;
+    case ARROWS:
     {
-        XYEllipseGraphicsItem *rectItem = static_cast<XYEllipseGraphicsItem *>(item);
-        if (rectItem)
-        {
-            rectItem->startPos = pos;
-        }
+        XYArrowsGraphicsItem *arrowsItem = static_cast<XYArrowsGraphicsItem *>(item);
+        arrowsItem->endPos = pos;
         break;
     }
     default:
         break;
     }
+    XYMovableGraphicsItem *moveItem = static_cast<XYMovableGraphicsItem *>(item);
+    if (moveItem)
+    {
+        moveItem->startPos = pos;
+    }
 }
 
-void XYGraphicsScene::setGraphicsItemMovePos(QGraphicsItem *item, const QPointF &pos)
+void XYGraphicsScene::setGraphicsItemEndPos(XYShapeGraphicsItem *item, const QPointF &pos)
+{
+    XYMovableGraphicsItem *moveItem = static_cast<XYMovableGraphicsItem *>(item);
+    if (moveItem)
+    {
+        moveItem->endPos = pos;
+    }
+}
+
+void XYGraphicsScene::setGraphicsItemMovePos(XYShapeGraphicsItem *item, const QPointF &pos)
 {
     switch (meShape)
     {
@@ -172,13 +199,31 @@ void XYGraphicsScene::setGraphicsItemMovePos(QGraphicsItem *item, const QPointF 
     }
     case ELLIPSE:
     {
-        XYEllipseGraphicsItem *rectItem = static_cast<XYEllipseGraphicsItem *>(item);
-        if (rectItem)
+        XYEllipseGraphicsItem *ellipseItem = static_cast<XYEllipseGraphicsItem *>(item);
+        if (ellipseItem)
         {
-            rectItem->moRect = QRectF(qMin(rectItem->startPos.x(), pos.x()),
-                                      qMin(rectItem->startPos.y(), pos.y()),
-                                      qAbs(rectItem->startPos.x() - pos.x()),
-                                      qAbs(rectItem->startPos.y() - pos.y()));
+            ellipseItem->moRect = QRectF(qMin(ellipseItem->startPos.x(), pos.x()),
+                                      qMin(ellipseItem->startPos.y(), pos.y()),
+                                      qAbs(ellipseItem->startPos.x() - pos.x()),
+                                      qAbs(ellipseItem->startPos.y() - pos.y()));
+        }
+        break;
+    }
+    case LINE:
+    {
+        XYLineGraphicsItem *lineItem = static_cast<XYLineGraphicsItem *>(item);
+        if (lineItem)
+        {
+            lineItem->moLine = QLineF(lineItem->startPos, pos);
+        }
+        break;
+    }
+    case ARROWS:
+    {
+        XYArrowsGraphicsItem *arrowsItem = static_cast<XYArrowsGraphicsItem *>(item);
+        if (arrowsItem)
+        {
+            arrowsItem->endPos = pos;
         }
         break;
     }

@@ -33,6 +33,7 @@ void MainWindow::setShape(QAction *act)
 {
     if (act)
     {
+        scene->setItemMovable(false);
         if (act->text() == "Rect")
         {
             scene->setShape(XYGraphicsScene::RECT);
@@ -44,6 +45,19 @@ void MainWindow::setShape(QAction *act)
         else if (act->text() == "Ellipse")
         {
             scene->setShape(XYGraphicsScene::ELLIPSE);
+        }
+        else if (act->text() == "Line")
+        {
+            scene->setShape(XYGraphicsScene::LINE);
+        }
+        else if (act->text() == "Arrows")
+        {
+            scene->setShape(XYGraphicsScene::ARROWS);
+        }
+        else if (act->text() == "Cursor")
+        {
+            scene->setShape(XYGraphicsScene::CURSOR);
+            scene->setItemMovable(true);
         }
     }
 }
@@ -90,21 +104,11 @@ void MainWindow::savePixmap()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-//    if (QMessageBox::question(this, QStringLiteral("确认"), QStringLiteral("是否需要保存当前图片？"))
-//            == QMessageBox::Yes)
-//    {
-//        QString path = QFileDialog::getSaveFileName(this, tr("Save File"),
-//                                                    "untitled.png",
-//                                                    tr("PNG (*.png);;JPG (*.jpg)"));
-//        if (!path.isEmpty())
-//        {
-//            QPixmap pixmap(scene->sceneRect().width(), scene->sceneRect().height());
-
-//            QPainter painter(&pixmap);
-//            scene->render(&painter);
-//            pixmap.save(path, path.mid(path.lastIndexOf(".") + 1).toUpper().toLocal8Bit().data());
-//        }
-//    }
+    if (QMessageBox::question(this, QStringLiteral("确认"), QStringLiteral("是否需要保存当前图片？"))
+            == QMessageBox::Yes)
+    {
+        savePixmap();
+    }
     QMainWindow::closeEvent(event);
 }
 
@@ -113,18 +117,27 @@ void MainWindow::initToolBar()
     QToolBar *bar = new QToolBar;
     QActionGroup *shapeGroup = new QActionGroup(this);
 
-    QAction *act = bar->addAction(QString("Open File"), this, SLOT(openPixmap()));
-    act = bar->addAction(QString("Save File"), this, SLOT(savePixmap()));
+    QAction *act = bar->addAction(QIcon(":/open.ico"), QString("Open File"), this, SLOT(openPixmap()));
+    act = bar->addAction(QIcon(":/save.ico"), QString("Save File"), this, SLOT(savePixmap()));
 
-    act = bar->addAction(QString("Rect"));
+    act = bar->addAction(QIcon(":/rect.ico"), QString("Rect"));
     act->setCheckable(true);
     act->setChecked(true);
     scene->setShape(XYGraphicsScene::RECT);
     shapeGroup->addAction(act);
-    act = bar->addAction(QString("Path"));
+    act = bar->addAction(QIcon(":/ellipse.ico"), QString("Ellipse"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
-    act = bar->addAction(QString("Ellipse"));
+    act = bar->addAction(QIcon(":/arrows.ico"), QString("Arrows"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/line.ico"), QString("Line"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/draw.ico"), QString("Path"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
 

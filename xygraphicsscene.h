@@ -3,15 +3,17 @@
 
 #include <QGraphicsScene>
 
+class XYShapeGraphicsItem;
 class XYGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    enum SHAPE{RECT, PATH, ELLIPSE};
+    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, CURSOR};
     explicit XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent = Q_NULLPTR);
     ~XYGraphicsScene();
     SHAPE getShape();
     void setShape(SHAPE shape);
+    void setItemMovable(bool movable);
 
     void savePixmap(const QString &path);
 
@@ -19,12 +21,14 @@ protected:
     bool event(QEvent *event);
 
 private:
-    QGraphicsItem *getCurDrawshapeItem();
-    void setGraphicsItemStartPos(QGraphicsItem *item, const QPointF &pos);
-    void setGraphicsItemMovePos(QGraphicsItem *item, const QPointF &pos);
+    XYShapeGraphicsItem *getCurDrawshapeItem();
+    void setGraphicsItemStartPos(XYShapeGraphicsItem *item, const QPointF &pos);
+    void setGraphicsItemEndPos(XYShapeGraphicsItem *item, const QPointF &pos);
+    void setGraphicsItemMovePos(XYShapeGraphicsItem *item, const QPointF &pos);
 
 private:
     SHAPE meShape;
+
 };
 
 #endif // XYGRAPHICSSCENE_H

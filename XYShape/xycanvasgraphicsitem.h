@@ -1,9 +1,9 @@
 ﻿#ifndef XYCANVASGRAPHICSITEM_H
 #define XYCANVASGRAPHICSITEM_H
 
-#include "xygraphicsshapeitem.h"
+#include "xyshapegraphicsitem.h"
 
-class XYCanvasGraphicsItem : public XYGraphicsShapeItem
+class XYCanvasGraphicsItem : public XYShapeGraphicsItem
 {
     Q_OBJECT
 public:

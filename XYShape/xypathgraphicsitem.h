@@ -1,9 +1,9 @@
 ﻿#ifndef XYGRAPHICSPATHITEM_H
 #define XYGRAPHICSPATHITEM_H
 
-#include "xygraphicsmovableitem.h"
+#include "xymovablegraphicsitem.h"
 
-class XYPathGraphicsItem : public XYGraphicsMovableItem
+class XYPathGraphicsItem : public XYMovableGraphicsItem
 {
     Q_OBJECT
 public:
@@ -13,6 +13,7 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *w) Q_DECL_OVERRIDE;
+    bool isValid();
 
 private:
     QPainterPath moPath;

@@ -1,9 +1,9 @@
 ﻿#ifndef XYGRAPHICSRECTITEM_H
 #define XYGRAPHICSRECTITEM_H
 
-#include "xygraphicsmovableitem.h"
+#include "xymovablegraphicsitem.h"
 
-class XYRectGraphicsItem : public XYGraphicsMovableItem
+class XYRectGraphicsItem : public XYMovableGraphicsItem
 {
     Q_OBJECT
 public:
@@ -15,7 +15,6 @@ public:
                QWidget *w) Q_DECL_OVERRIDE;
 private:
     QRectF moRect;
-    QPointF startPos;
 
     friend class XYGraphicsScene;
 };

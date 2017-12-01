@@ -2,5 +2,13 @@
     <qresource prefix="/">
         <file>backimage.jpg</file>
         <file>test.png</file>
+        <file>draw.ico</file>
+        <file>ellipse.ico</file>
+        <file>rect.ico</file>
+        <file>open.ico</file>
+        <file>save.ico</file>
+        <file>line.ico</file>
+        <file>cursor.ico</file>
+        <file>arrows.ico</file>
     </qresource>
 </RCC>

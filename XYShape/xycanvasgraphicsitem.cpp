@@ -8,7 +8,7 @@
 
 
 XYCanvasGraphicsItem::XYCanvasGraphicsItem(const QPixmap &pixmap, QGraphicsItem *parent)
-    : XYGraphicsShapeItem(parent), backImage(pixmap)
+    : XYShapeGraphicsItem(parent), backImage(pixmap)
 {
 
 }

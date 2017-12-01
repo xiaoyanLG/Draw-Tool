@@ -1,0 +1,31 @@
+﻿#ifndef XYGRAPHICSSHAPEITEM_H
+#define XYGRAPHICSSHAPEITEM_H
+
+#include <QObject>
+#include <QAbstractGraphicsShapeItem>
+#include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QStyleOptionGraphicsItem>
+#include <QDebug>
+
+class XYShapeGraphicsItem : public QObject, public QAbstractGraphicsShapeItem
+{
+    Q_OBJECT
+public:
+    explicit XYShapeGraphicsItem(QGraphicsItem *parent = 0);
+
+    QRectF boundingRect() const Q_DECL_OVERRIDE;
+    void paint(QPainter *painter,
+               const QStyleOptionGraphicsItem *option,
+               QWidget *) Q_DECL_OVERRIDE;
+    virtual bool isValid();
+
+public:
+    static QLineF getEllipseAndLineNodes(qreal k, qreal b, qreal c, qreal d, qreal r);
+    static QLineF getVerticalLine(const QPointF &start,  // 获取一条直线的垂直线
+                           const QPointF &end,
+                           qreal distance,
+                           qreal len);
+};
+
+#endif // XYGRAPHICSSHAPEITEM_H
