@@ -8,7 +8,7 @@ class XYGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, CURSOR};
+    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, TEXT, CURSOR};
     explicit XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent = Q_NULLPTR);
     ~XYGraphicsScene();
     SHAPE getShape();

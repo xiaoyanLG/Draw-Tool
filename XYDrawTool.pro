@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     XYShape/xylinegraphicsitem.cpp \
     XYShape/xymovablegraphicsitem.cpp \
     XYShape/xyshapegraphicsitem.cpp \
-    XYShape/xyarrowsgraphicsitem.cpp
+    XYShape/xyarrowsgraphicsitem.cpp \
+    XYShape/xytextgraphicsitem.cpp
 
 HEADERS  += \
     xygraphicsview.h \
@@ -37,7 +38,8 @@ HEADERS  += \
     XYShape/xylinegraphicsitem.h \
     XYShape/xymovablegraphicsitem.h \
     XYShape/xyshapegraphicsitem.h \
-    XYShape/xyarrowsgraphicsitem.h
+    XYShape/xyarrowsgraphicsitem.h \
+    XYShape/xytextgraphicsitem.h
 
 RESOURCES += \
     images/images.qrc

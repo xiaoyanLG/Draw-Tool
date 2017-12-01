@@ -10,5 +10,6 @@
         <file>line.ico</file>
         <file>cursor.ico</file>
         <file>arrows.ico</file>
+        <file>text.ico</file>
     </qresource>
 </RCC>

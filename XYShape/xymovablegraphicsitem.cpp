@@ -59,3 +59,22 @@ bool XYMovableGraphicsItem::isValid()
     }
     return true;
 }
+
+void XYMovableGraphicsItem::startCreateItem(const QPointF &pos)
+{
+    selected = true;
+    startPos = pos;
+    endPos = pos;
+}
+
+void XYMovableGraphicsItem::duringCreateItem(const QPointF &pos)
+{
+    selected = true;
+    endPos = pos;
+}
+
+void XYMovableGraphicsItem::endCreateItem(const QPointF &pos)
+{
+    selected = false;
+    endPos = pos;
+}

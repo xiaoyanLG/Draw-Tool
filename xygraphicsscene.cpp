@@ -4,6 +4,7 @@
 #include "xyellipsegraphicsitem.h"
 #include "xylinegraphicsitem.h"
 #include "xyarrowsgraphicsitem.h"
+#include "xytextgraphicsitem.h"
 
 XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent)
     : QGraphicsScene(x, y, width, height, parent)
@@ -123,6 +124,9 @@ XYShapeGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
     case ARROWS:
         item = new XYArrowsGraphicsItem;
         break;
+    case TEXT:
+        item = new XYTextGraphicsItem;
+        break;
     default:
         break;
     }
@@ -146,6 +150,7 @@ void XYGraphicsScene::setGraphicsItemStartPos(XYShapeGraphicsItem *item, const Q
     case RECT:
     case ELLIPSE:
     case LINE:
+    case TEXT:
         break;
     case ARROWS:
     {
@@ -159,7 +164,7 @@ void XYGraphicsScene::setGraphicsItemStartPos(XYShapeGraphicsItem *item, const Q
     XYMovableGraphicsItem *moveItem = static_cast<XYMovableGraphicsItem *>(item);
     if (moveItem)
     {
-        moveItem->startPos = pos;
+        moveItem->startCreateItem(pos);
     }
 }
 
@@ -168,7 +173,7 @@ void XYGraphicsScene::setGraphicsItemEndPos(XYShapeGraphicsItem *item, const QPo
     XYMovableGraphicsItem *moveItem = static_cast<XYMovableGraphicsItem *>(item);
     if (moveItem)
     {
-        moveItem->endPos = pos;
+        moveItem->endCreateItem(pos);
     }
 }
 
@@ -219,11 +224,12 @@ void XYGraphicsScene::setGraphicsItemMovePos(XYShapeGraphicsItem *item, const QP
         break;
     }
     case ARROWS:
+    case TEXT:
     {
-        XYArrowsGraphicsItem *arrowsItem = static_cast<XYArrowsGraphicsItem *>(item);
-        if (arrowsItem)
+        XYMovableGraphicsItem *generalItem = static_cast<XYMovableGraphicsItem *>(item);
+        if (generalItem)
         {
-            arrowsItem->endPos = pos;
+            generalItem->duringCreateItem(pos);
         }
         break;
     }

@@ -54,6 +54,10 @@ void MainWindow::setShape(QAction *act)
         {
             scene->setShape(XYGraphicsScene::ARROWS);
         }
+        else if (act->text() == "Text")
+        {
+            scene->setShape(XYGraphicsScene::TEXT);
+        }
         else if (act->text() == "Cursor")
         {
             scene->setShape(XYGraphicsScene::CURSOR);
@@ -135,6 +139,9 @@ void MainWindow::initToolBar()
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/draw.ico"), QString("Path"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/text.ico"), QString("Text"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));

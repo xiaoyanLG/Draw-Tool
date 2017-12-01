@@ -22,7 +22,6 @@ private:
                                qreal len) const;
 
 private:
-    QPointF endPos;
     qreal   len;
 
     friend class XYGraphicsScene;

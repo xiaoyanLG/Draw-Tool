@@ -16,13 +16,18 @@ protected:
 
     // 指示该区域是否是悬浮区域(子类可以重写)
     virtual bool isHoverArea(const QPointF &pos);
-    bool isValid();
+    virtual bool isValid();
+
+    virtual void startCreateItem(const QPointF &pos);
+    virtual void duringCreateItem(const QPointF &pos);
+    virtual void endCreateItem(const QPointF &pos);
 
 public slots:
 
 protected:
     QPointF startPos;
     QPointF endPos;
+    bool    selected;
     static  bool acceptMouse;
 
     friend class XYGraphicsScene;

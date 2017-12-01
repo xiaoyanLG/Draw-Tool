@@ -3,10 +3,11 @@
 XYArrowsGraphicsItem::XYArrowsGraphicsItem(const QPointF &start,
                                            const QPointF &end,
                                            QGraphicsItem *parent)
-    : XYMovableGraphicsItem(parent), endPos(end)
+    : XYMovableGraphicsItem(parent)
 {
     len = 16;
     startPos = start;
+    endPos = end;
 }
 
 QRectF XYArrowsGraphicsItem::boundingRect() const
