@@ -18,6 +18,7 @@ public slots:
     void setShape(QAction *act);
     void openPixmap();
     void savePixmap();
+    void settingPen();
 
 protected:
     void closeEvent(QCloseEvent *event);

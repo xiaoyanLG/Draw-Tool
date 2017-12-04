@@ -27,6 +27,7 @@ void XYShapeGraphicsItem::paint(QPainter *painter,
         pen.setStyle(Qt::DashLine);
     }
     painter->setPen(pen);
+    painter->setFont(getFont());
     painter->setBrush(brush());
 }
 
@@ -129,3 +130,14 @@ QLineF XYShapeGraphicsItem::getVerticalLine(const QPointF &start,
         return line;
     }
 }
+
+QFont XYShapeGraphicsItem::getFont() const
+{
+    return moFont;
+}
+
+void XYShapeGraphicsItem::setFont(const QFont &value)
+{
+    moFont = value;
+}
+

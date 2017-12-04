@@ -5,6 +5,7 @@
 #include "xylinegraphicsitem.h"
 #include "xyarrowsgraphicsitem.h"
 #include "xytextgraphicsitem.h"
+#include "xypensettingwidget.h"
 #include <QGraphicsView>
 #include <QApplication>
 
@@ -219,17 +220,20 @@ void XYGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 QPen XYGraphicsScene::getCurPen()
 {
-    QPen pen;
-    pen.setColor(QColor("blue"));
-    return pen;
+    XYPenSettingWidget *penSetting = XYPenSettingWidget::getInstance();
+    return penSetting->getMoPen();
+}
+
+QFont XYGraphicsScene::getCurFont()
+{
+    XYPenSettingWidget *penSetting = XYPenSettingWidget::getInstance();
+    return penSetting->getMoFont();
 }
 
 QBrush XYGraphicsScene::getCurBrush()
 {
-    QBrush brush;
-    brush.setStyle(Qt::SolidPattern);
-    brush.setColor(QColor("green"));
-    return brush;
+    XYPenSettingWidget *penSetting = XYPenSettingWidget::getInstance();
+    return penSetting->getMoBrush();
 }
 
 XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
@@ -259,10 +263,16 @@ XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
         break;
     }
 
-    if (item)
+    if (item != NULL)
     {
         item->setPen(getCurPen());
+        item->setFont(getCurFont());
         item->setBrush(getCurBrush());
+        if (textEdit != NULL)
+        {
+            textEdit->setTextColor(getCurPen().color());
+            textEdit->setFont(getCurFont());
+        }
     }
     return item;
 }

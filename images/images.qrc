@@ -12,5 +12,6 @@
         <file>arrows.ico</file>
         <file>text.ico</file>
         <file>delete.ico</file>
+        <file>settingpen.ico</file>
     </qresource>
 </RCC>

@@ -27,8 +27,7 @@ SOURCES += main.cpp\
     XYShape/xyarrowsgraphicsitem.cpp \
     XYShape/xytextgraphicsitem.cpp \
     xymovablewidget.cpp \
-    xypensettingwidget.cpp \
-    xybrushsettingwidget.cpp
+    xypensettingwidget.cpp
 
 HEADERS  += \
     xygraphicsview.h \
@@ -44,8 +43,7 @@ HEADERS  += \
     XYShape/xyarrowsgraphicsitem.h \
     XYShape/xytextgraphicsitem.h \
     xymovablewidget.h \
-    xypensettingwidget.h \
-    xybrushsettingwidget.h
+    xypensettingwidget.h
 
 RESOURCES += \
     images/images.qrc

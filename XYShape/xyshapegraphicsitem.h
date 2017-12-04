@@ -22,6 +22,9 @@ public:
     virtual bool isValid();
     int type() const;
 
+    QFont getFont() const;
+    void setFont(const QFont &value);
+
 public:
     static QLineF getEllipseAndLineNodes(qreal k, qreal b, qreal c, qreal d, qreal r);
     static QLineF getVerticalLine(const QPointF &start,  // 获取一条直线的垂直线
@@ -30,6 +33,8 @@ public:
                            qreal len);
 
     bool   creating;
+    QFont  moFont;
+
 };
 
 #endif // XYGRAPHICSSHAPEITEM_H

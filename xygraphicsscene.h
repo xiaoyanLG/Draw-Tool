@@ -31,6 +31,7 @@ protected:
 
 private:
     QPen getCurPen();
+    QFont getCurFont();
     QBrush getCurBrush();
     XYMovableGraphicsItem *getCurDrawshapeItem();
     void setGraphicsItemStartPos(XYMovableGraphicsItem *item, const QPointF &pos);

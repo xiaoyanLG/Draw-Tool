@@ -6,7 +6,6 @@
 #include "xypathgraphicsitem.h"
 #include "xyellipsegraphicsitem.h"
 #include "xypensettingwidget.h"
-#include "xybrushsettingwidget.h"
 
 #include <QToolBar>
 #include <QFileDialog>
@@ -115,6 +114,22 @@ void MainWindow::savePixmap()
     }
 }
 
+void MainWindow::settingPen()
+{
+    XYPenSettingWidget *penSetting = XYPenSettingWidget::getInstance();
+    if (penSetting->isHidden())
+    {
+        penSetting->setVisible(true);
+        penSetting->raise();
+        penSetting->move(pos().x() + width() + 20,
+                         pos().y() + 70);
+    }
+    else
+    {
+        penSetting->setVisible(false);
+    }
+}
+
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (QMessageBox::question(this, QStringLiteral("确认"), QStringLiteral("是否需要保存当前图片？"))
@@ -159,6 +174,7 @@ void MainWindow::initToolBar()
     act = bar->addAction(QIcon(":/delete.ico"), QString("Delete"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"), this, SLOT(settingPen()));
 
     connect(shapeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setShape(QAction *)));
 

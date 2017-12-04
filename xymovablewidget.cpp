@@ -19,6 +19,7 @@ void XYMovableWidget::mousePressEvent(QMouseEvent *event)
         mbLeftMousePressed = true;
         moLastPos = event->globalPos();
     }
+    QWidget::mousePressEvent(event);
 }
 
 void XYMovableWidget::mouseReleaseEvent(QMouseEvent *event)
@@ -28,11 +29,12 @@ void XYMovableWidget::mouseReleaseEvent(QMouseEvent *event)
         mbLeftMousePressed = false;
         moLastPos = event->globalPos();
     }
+    QWidget::mouseReleaseEvent(event);
 }
 
 void XYMovableWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (mbLeftMousePressed)
+    if (mbLeftMousePressed && rect().contains(event->pos()))
     {
         QPoint lastpos = pos();
         lastpos.setX( lastpos.x() + event->globalX() - moLastPos.x());
@@ -40,5 +42,6 @@ void XYMovableWidget::mouseMoveEvent(QMouseEvent *event)
         move(lastpos);
         moLastPos = event->globalPos();
     }
+    QWidget::mouseMoveEvent(event);
 }
 
