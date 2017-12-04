@@ -16,6 +16,10 @@ public:
 
     virtual void startCreateItem(const QPointF &pos);
     virtual void endCreateItem(const QPointF &pos);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) Q_DECL_OVERRIDE;
+
 private:
     QFont moFont;
     QString msText;

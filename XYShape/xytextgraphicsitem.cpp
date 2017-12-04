@@ -1,9 +1,10 @@
 ﻿#include "xytextgraphicsitem.h"
+#include "xygraphicsscene.h"
 
 XYTextGraphicsItem::XYTextGraphicsItem(const QString &text, QGraphicsItem *parent)
     : XYMovableGraphicsItem(parent)
 {
-
+    meType = XYTEXT;
 }
 
 QRectF XYTextGraphicsItem::boundingRect() const
@@ -23,20 +24,37 @@ void XYTextGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
 {
     XYMovableGraphicsItem::paint(painter, option, w);
     if (option->state & QStyle::State_MouseOver
-            || option->state & QStyle::State_Selected
+            || creating
             || selected)
     {
+        QPen pen = painter->pen();
+        pen.setStyle(Qt::DashLine);
+        painter->setPen(pen);
+        painter->setBrush(QColor("white"));
         painter->drawRect(boundingRect());
     }
+
     painter->drawText(boundingRect(), msText);
 }
 
 void XYTextGraphicsItem::startCreateItem(const QPointF &pos)
 {
+    selected = true;
     XYMovableGraphicsItem::startCreateItem(pos);
 }
 
 void XYTextGraphicsItem::endCreateItem(const QPointF &pos)
 {
     XYMovableGraphicsItem::endCreateItem(pos);
+    if (scene() != NULL)
+    {
+        ((XYGraphicsScene *)scene())->showTextEdit(this);
+    }
+}
+
+void XYTextGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    XYMovableGraphicsItem::mousePressEvent(event);
+    selected = true;
+    event->accept();
 }

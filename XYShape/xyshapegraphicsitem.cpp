@@ -3,7 +3,7 @@
 XYShapeGraphicsItem::XYShapeGraphicsItem(QGraphicsItem *parent)
     : QAbstractGraphicsShapeItem(parent)
 {
-
+    creating = true;
 }
 
 QRectF XYShapeGraphicsItem::boundingRect() const
@@ -16,16 +16,28 @@ void XYShapeGraphicsItem::paint(QPainter *painter,
                                 QWidget *)
 {
     painter->setRenderHints(QPainter::Antialiasing);
+    QPen pen = this->pen();
     if (option->state & QStyle::State_MouseOver
-            || option->state & QStyle::State_Selected)
+            || creating)
     {
-        painter->setPen(QColor("red"));
+        pen.setColor(QColor("red"));
     }
+    if (creating)
+    {
+        pen.setStyle(Qt::DashLine);
+    }
+    painter->setPen(pen);
+    painter->setBrush(brush());
 }
 
 bool XYShapeGraphicsItem::isValid()
 {
     return true;
+}
+
+int XYShapeGraphicsItem::type() const
+{
+    return XYSHAPE;
 }
 
 QLineF XYShapeGraphicsItem::getEllipseAndLineNodes(qreal k, qreal b, qreal c, qreal d, qreal r)

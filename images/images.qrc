@@ -11,5 +11,6 @@
         <file>cursor.ico</file>
         <file>arrows.ico</file>
         <file>text.ico</file>
+        <file>delete.ico</file>
     </qresource>
 </RCC>

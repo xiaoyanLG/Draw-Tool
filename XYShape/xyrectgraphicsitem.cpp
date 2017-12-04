@@ -8,7 +8,8 @@ XYRectGraphicsItem::XYRectGraphicsItem(const QRectF &rect, QGraphicsItem *parent
 
 QRectF XYRectGraphicsItem::boundingRect() const
 {
-    return moRect;
+    return QRectF(moRect.x(), moRect.y(),
+                  moRect.width() + 1, moRect.height() + 1);
 }
 
 void XYRectGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)

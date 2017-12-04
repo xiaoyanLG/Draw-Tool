@@ -2,9 +2,21 @@
 
 bool XYMovableGraphicsItem::acceptMouse = false;
 XYMovableGraphicsItem::XYMovableGraphicsItem(QGraphicsItem *parent)
-    : XYShapeGraphicsItem(parent)
+    : XYShapeGraphicsItem(parent), selected(false)
 {
+    meType = XYSHAPEMOVABLE;
     setAcceptHoverEvents(true);
+}
+
+void XYMovableGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
+{
+    XYShapeGraphicsItem::paint(painter, option, w);
+    if (selected)
+    {
+        QPen pen = painter->pen();
+        pen.setColor(QColor("red"));
+        painter->setPen(pen);
+    }
 }
 
 void XYMovableGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
@@ -17,6 +29,7 @@ void XYMovableGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     {
         event->accept();
     }
+    selected = true;
 }
 
 void XYMovableGraphicsItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
@@ -53,28 +66,31 @@ bool XYMovableGraphicsItem::isValid()
 {
     int w = startPos.x() - endPos.x();
     int h = startPos.y() - endPos.y();
-    if (w * w + h * h < 5*5) // 控制误差范围
+    if (w * w + h * h < 10*10) // 控制误差范围
     {
         return false;
     }
     return true;
 }
 
+int XYMovableGraphicsItem::type() const
+{
+    return meType;
+}
+
 void XYMovableGraphicsItem::startCreateItem(const QPointF &pos)
 {
-    selected = true;
     startPos = pos;
     endPos = pos;
 }
 
 void XYMovableGraphicsItem::duringCreateItem(const QPointF &pos)
 {
-    selected = true;
     endPos = pos;
 }
 
 void XYMovableGraphicsItem::endCreateItem(const QPointF &pos)
 {
-    selected = false;
     endPos = pos;
+    creating = false;
 }

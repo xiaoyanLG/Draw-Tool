@@ -12,6 +12,7 @@ class XYShapeGraphicsItem : public QObject, public QAbstractGraphicsShapeItem
 {
     Q_OBJECT
 public:
+    enum { XYSHAPE = UserType + 1 };
     explicit XYShapeGraphicsItem(QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const Q_DECL_OVERRIDE;
@@ -19,6 +20,7 @@ public:
                const QStyleOptionGraphicsItem *option,
                QWidget *) Q_DECL_OVERRIDE;
     virtual bool isValid();
+    int type() const;
 
 public:
     static QLineF getEllipseAndLineNodes(qreal k, qreal b, qreal c, qreal d, qreal r);
@@ -26,6 +28,8 @@ public:
                            const QPointF &end,
                            qreal distance,
                            qreal len);
+
+    bool   creating;
 };
 
 #endif // XYGRAPHICSSHAPEITEM_H

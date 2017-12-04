@@ -5,11 +5,15 @@
 #include "xylinegraphicsitem.h"
 #include "xyarrowsgraphicsitem.h"
 #include "xytextgraphicsitem.h"
+#include <QGraphicsView>
+#include <QApplication>
 
 XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent)
     : QGraphicsScene(x, y, width, height, parent)
 {
     meShape = ELLIPSE;
+    haveKeyboardItem = NULL;
+    textEdit = NULL;
 }
 
 XYGraphicsScene::~XYGraphicsScene()
@@ -32,6 +36,16 @@ void XYGraphicsScene::setItemMovable(bool movable)
     XYMovableGraphicsItem::acceptMouse = movable;
 }
 
+void XYGraphicsScene::setTextEdit(QTextEdit *textEdit)
+{
+    this->textEdit = textEdit;
+    if (this->textEdit != NULL)
+    {
+        this->textEdit->setVisible(false);
+        connect(this->textEdit, SIGNAL(textChanged()), this, SLOT(setItemText()));
+    }
+}
+
 void XYGraphicsScene::savePixmap(const QString &path)
 {
     QPixmap pixmap;
@@ -40,9 +54,47 @@ void XYGraphicsScene::savePixmap(const QString &path)
     pixmap.save(path);
 }
 
+void XYGraphicsScene::showTextEdit(XYTextGraphicsItem *item)
+{
+    if (textEdit != NULL)
+    {
+        haveKeyboardItem = item;
+        qreal x_offset = 0;
+        qreal y_offset = 0;
+        if (!views().isEmpty())
+        {
+            x_offset = views().at(0)->width();
+            y_offset = views().at(0)->height();
+        }
+        if (x_offset > width())
+        {
+            x_offset = (x_offset - width()) / 2;
+        }
+        if (y_offset > height())
+        {
+            y_offset = (y_offset - height()) / 2;
+        }
+        textEdit->resize(item->sceneBoundingRect().width(),
+                         item->sceneBoundingRect().height());
+        textEdit->move(item->sceneBoundingRect().x() + x_offset,
+                       item->sceneBoundingRect().y() + y_offset);
+        textEdit->setText(((XYTextGraphicsItem *)item)->msText);
+        textEdit->setFocus();
+        textEdit->setVisible(true);
+    }
+}
+
+void XYGraphicsScene::setItemText()
+{
+    if (textEdit != NULL && haveKeyboardItem != NULL)
+    {
+        ((XYTextGraphicsItem *)haveKeyboardItem)->msText = textEdit->toPlainText();
+    }
+}
+
 bool XYGraphicsScene::event(QEvent *event)
 {
-    static XYShapeGraphicsItem *item = NULL;
+    static XYMovableGraphicsItem *item = NULL;
     QGraphicsScene::event(event);
     if (event->isAccepted())
     {
@@ -78,11 +130,11 @@ bool XYGraphicsScene::event(QEvent *event)
             if (item)
             {
                 setGraphicsItemMovePos(item, mouse_event->scenePos());
-                setGraphicsItemEndPos(item, mouse_event->scenePos());
                 this->removeItem(item);
                 if (item->isValid())
                 {
                     this->addItem(item);
+                    setGraphicsItemEndPos(item, mouse_event->scenePos());
                 }
                 else
                 {
@@ -104,9 +156,85 @@ bool XYGraphicsScene::event(QEvent *event)
     return true;
 }
 
-XYShapeGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
+void XYGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    XYShapeGraphicsItem *item = NULL;
+    if (mouseEvent->button() == Qt::LeftButton)
+    {
+        QList<QGraphicsItem *> items = this->items();
+        for (int i = 0; i < items.size(); ++i)
+        {
+            if (((XYMovableGraphicsItem *)items.at(i))->selected)
+            {
+                ((XYMovableGraphicsItem *)items.at(i))->mouseMoveEvent(mouseEvent);
+            }
+        }
+    }
+    QGraphicsScene::mouseMoveEvent(mouseEvent);
+}
+
+void XYGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
+{
+    QGraphicsItem *item = itemAt(mouseEvent->scenePos(), QTransform());
+
+    switch (meShape)
+    {
+    case DELETE:
+        if (item != NULL)
+        {
+            removeItem(item);
+            delete item;
+        }
+        return;
+    default:
+        break;
+    }
+    if (item &&
+        item->type() == XYTextGraphicsItem::XYTEXT)
+    {
+        haveKeyboardItem = (XYTextGraphicsItem *)item;
+        if (meShape != CURSOR)
+        {
+            showTextEdit(haveKeyboardItem);
+        }
+    }
+    else if (textEdit != NULL && !textEdit->isHidden())
+    {
+        textEdit->setVisible(false);
+    }
+
+    if (!(qApp->keyboardModifiers() & Qt::ControlModifier))
+    {
+        QList<QGraphicsItem *> items = this->items();
+        for (int i = 0; i < items.size(); ++i)
+        {
+            if (items.at(i) != item)
+            {
+                ((XYMovableGraphicsItem *)items.at(i))->selected = false;
+            }
+        }
+    }
+    update(sceneRect());
+    QGraphicsScene::mousePressEvent(mouseEvent);
+}
+
+QPen XYGraphicsScene::getCurPen()
+{
+    QPen pen;
+    pen.setColor(QColor("blue"));
+    return pen;
+}
+
+QBrush XYGraphicsScene::getCurBrush()
+{
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+    brush.setColor(QColor("green"));
+    return brush;
+}
+
+XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
+{
+    XYMovableGraphicsItem *item = NULL;
     switch (meShape)
     {
     case RECT:
@@ -131,10 +259,15 @@ XYShapeGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
         break;
     }
 
+    if (item)
+    {
+        item->setPen(getCurPen());
+        item->setBrush(getCurBrush());
+    }
     return item;
 }
 
-void XYGraphicsScene::setGraphicsItemStartPos(XYShapeGraphicsItem *item, const QPointF &pos)
+void XYGraphicsScene::setGraphicsItemStartPos(XYMovableGraphicsItem *item, const QPointF &pos)
 {
     switch (meShape)
     {
@@ -168,7 +301,7 @@ void XYGraphicsScene::setGraphicsItemStartPos(XYShapeGraphicsItem *item, const Q
     }
 }
 
-void XYGraphicsScene::setGraphicsItemEndPos(XYShapeGraphicsItem *item, const QPointF &pos)
+void XYGraphicsScene::setGraphicsItemEndPos(XYMovableGraphicsItem *item, const QPointF &pos)
 {
     XYMovableGraphicsItem *moveItem = static_cast<XYMovableGraphicsItem *>(item);
     if (moveItem)
@@ -177,8 +310,9 @@ void XYGraphicsScene::setGraphicsItemEndPos(XYShapeGraphicsItem *item, const QPo
     }
 }
 
-void XYGraphicsScene::setGraphicsItemMovePos(XYShapeGraphicsItem *item, const QPointF &pos)
+void XYGraphicsScene::setGraphicsItemMovePos(XYMovableGraphicsItem *item, const QPointF &pos)
 {
+    item->endPos = pos;
     switch (meShape)
     {
     case RECT:

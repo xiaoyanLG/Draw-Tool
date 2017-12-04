@@ -5,16 +5,21 @@
 #include "xyrectgraphicsitem.h"
 #include "xypathgraphicsitem.h"
 #include "xyellipsegraphicsitem.h"
+#include "xypensettingwidget.h"
+#include "xybrushsettingwidget.h"
 
 #include <QToolBar>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QGraphicsTextItem>
+#include <QAction>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     scene = new XYGraphicsScene(0, 0, 700, 500);
     view = new XYGraphicsView(scene);
+    scene->setTextEdit(new QTextEdit(view));
     canvas = new XYCanvasGraphicsItem;
 
     view->scene()->setBackgroundBrush(QPixmap(":/backimage.jpg"));
@@ -62,6 +67,10 @@ void MainWindow::setShape(QAction *act)
         {
             scene->setShape(XYGraphicsScene::CURSOR);
             scene->setItemMovable(true);
+        }
+        else if (act->text() == "Delete")
+        {
+            scene->setShape(XYGraphicsScene::DELETE);
         }
     }
 }
@@ -145,6 +154,9 @@ void MainWindow::initToolBar()
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/delete.ico"), QString("Delete"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
 
