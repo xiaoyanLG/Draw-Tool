@@ -1,6 +1,6 @@
 ﻿#include "xygraphicsview.h"
-#include <QMessageBox>
-#include <QFileDialog>
+#include <QWheelEvent>
+#include <QTime>
 
 XYGraphicsView::XYGraphicsView(QGraphicsScene *scene)
     : QGraphicsView(scene)
@@ -11,4 +11,24 @@ XYGraphicsView::XYGraphicsView(QGraphicsScene *scene)
 XYGraphicsView::~XYGraphicsView()
 {
 
+}
+
+void XYGraphicsView::wheelEvent(QWheelEvent *event)
+{
+    qreal unit = 0.02;
+    QMatrix mat = matrix();
+    if (event->delta() > 0)
+    {
+        mat.scale(1 + unit, 1 + unit);
+    }
+    else
+    {
+        mat.scale(1 - unit, 1 - unit);
+    }
+    setMatrix(mat);
+}
+
+void XYGraphicsView::dragEnterEvent(QDragEnterEvent *event)
+{
+    // QTBUG 没有重写这个函数接收不到事件
 }

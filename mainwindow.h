@@ -16,12 +16,13 @@ public:
 
 public slots:
     void setShape(QAction *act);
-    void openPixmap();
+    void openPixmap(const QString &path = QString());
     void savePixmap();
     void settingPen();
 
 protected:
     void closeEvent(QCloseEvent *event);
+    bool eventFilter(QObject *watched, QEvent *event);
 
 private:
     void initToolBar();

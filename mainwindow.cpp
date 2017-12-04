@@ -10,6 +10,8 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QDragEnterEvent>
+#include <QMimeData>
 #include <QGraphicsTextItem>
 #include <QAction>
 
@@ -26,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
     setCentralWidget(view);
 
     initToolBar();
+
+    view->installEventFilter(this);
+    setAcceptDrops(true);
 }
 
 MainWindow::~MainWindow()
@@ -74,11 +79,18 @@ void MainWindow::setShape(QAction *act)
     }
 }
 
-void MainWindow::openPixmap()
+void MainWindow::openPixmap(const QString &path)
 {
-    lastPixmapPath = QFileDialog::getOpenFileName(this, tr("Open File"),
-                                 "",
-                                 tr("PNG (*.png);;JPG (*.jpg)"));
+    if (path.isEmpty())
+    {
+        lastPixmapPath = QFileDialog::getOpenFileName(this, tr("Open File"),
+                                     "",
+                                     tr("PNG (*.png);;JPG (*.jpg)"));
+    }
+    else
+    {
+        lastPixmapPath = path;
+    }
     QPixmap pixmap(lastPixmapPath);
     if (!pixmap.isNull())
     {
@@ -138,6 +150,41 @@ void MainWindow::closeEvent(QCloseEvent *event)
         savePixmap();
     }
     QMainWindow::closeEvent(event);
+}
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == view)
+    {
+        if (event->type() == QEvent::Drop)
+        {
+            QDropEvent *drag = (QDropEvent *)event;
+            const QMimeData *mimeData = drag->mimeData();
+            if (mimeData->hasUrls())
+            {
+                QList<QUrl> urlList = mimeData->urls();
+                if (urlList.size() > 1)
+                {
+                    QMessageBox::warning(this, QStringLiteral("警告"),
+                                         QStringLiteral("只能处理一个文件！"));
+                    return true;
+                }
+                else
+                {
+                    QString path = urlList.at(0).toLocalFile();
+                    openPixmap(path);
+                }
+            }
+            return true;
+        }
+        else if (event->type() == QEvent::DragEnter)
+        {
+            QDragEnterEvent *drag = (QDragEnterEvent *)event;
+            drag->acceptProposedAction();
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
 }
 
 void MainWindow::initToolBar()
