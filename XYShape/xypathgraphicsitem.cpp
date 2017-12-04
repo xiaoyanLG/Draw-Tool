@@ -14,7 +14,6 @@ QRectF XYPathGraphicsItem::boundingRect() const
 void XYPathGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *w)
 {
     XYMovableGraphicsItem::paint(painter, option, w);
-    painter->setBrush(QBrush(Qt::NoBrush));
     painter->drawPath(moPath);
 }
 

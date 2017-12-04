@@ -22,10 +22,7 @@ void XYShapeGraphicsItem::paint(QPainter *painter,
     {
         pen.setColor(QColor("red"));
     }
-    if (creating)
-    {
-        pen.setStyle(Qt::DashLine);
-    }
+
     painter->setPen(pen);
     painter->setFont(getFont());
     painter->setBrush(brush());

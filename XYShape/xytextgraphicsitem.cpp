@@ -27,9 +27,6 @@ void XYTextGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
             || creating
             || selected)
     {
-        QPen pen = painter->pen();
-        pen.setStyle(Qt::DashLine);
-        painter->setPen(pen);
         painter->setBrush(QColor("white"));
         painter->drawRect(boundingRect());
     }
