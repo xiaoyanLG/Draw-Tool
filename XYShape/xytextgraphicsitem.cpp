@@ -31,6 +31,7 @@ void XYTextGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem
         painter->drawRect(boundingRect());
     }
 
+    painter->setPen(pen());
     painter->drawText(boundingRect(), msText);
 }
 
