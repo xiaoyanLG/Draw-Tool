@@ -139,6 +139,24 @@ void XYGraphicsScene::zoomDownItem()
     }
 }
 
+void XYGraphicsScene::rotationItem()
+{
+    if (selectItem)
+    {
+        qreal cur = selectItem->rotation() + 15;
+        if (qApp->keyboardModifiers() & Qt::ControlModifier)
+        {
+            cur = selectItem->rotation() + 0.5;
+        }
+        if (cur > 360)
+        {
+            cur -= 360;
+        }
+        selectItem->setTransformOriginPoint(selectItem->boundingRect().center());
+        selectItem->setRotation(cur);
+    }
+}
+
 void XYGraphicsScene::setItemText()
 {
     if (textEdit != NULL && haveKeyboardItem != NULL)

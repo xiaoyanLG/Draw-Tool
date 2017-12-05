@@ -17,5 +17,6 @@
         <file>zoomup.ico</file>
         <file>drawtool.ico</file>
         <file>stick.ico</file>
+        <file>rotation.ico</file>
     </qresource>
 </RCC>

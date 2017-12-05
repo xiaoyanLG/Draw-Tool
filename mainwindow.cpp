@@ -279,6 +279,9 @@ void MainWindow::initToolBar()
     act = bar->addAction(QIcon(":/zoomdown.ico"), QString("Zoom Down"),
                          scene, SLOT(zoomDownItem()));
     act->setToolTip(QStringLiteral("缩小图元"));
+    act = bar->addAction(QIcon(":/rotation.ico"), QString("Rotation"),
+                         scene, SLOT(rotationItem()));
+    act->setToolTip(QStringLiteral("旋转图元"));
     act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"),
                          this, SLOT(settingPen()));
     act->setToolTip(QStringLiteral("设置画笔画刷字体"));

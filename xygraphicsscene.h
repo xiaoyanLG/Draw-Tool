@@ -29,6 +29,7 @@ public slots:
     void stickItem();
     void zoomUpItem();
     void zoomDownItem();
+    void rotationItem();
     void setItemText();
     void slotPenChanged(const QPen &pen);
     void slotBrushChanged(const QBrush &brush);
