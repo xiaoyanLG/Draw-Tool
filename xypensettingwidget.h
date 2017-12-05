@@ -12,6 +12,7 @@
 #include <QColorDialog>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QGraphicsItem>
 
 class XYLabel: public QLabel
 {
@@ -54,6 +55,17 @@ public:
 
     QBrush getMoBrush();
     void setMoBrush(const QBrush &value);
+
+signals:
+    void penChanged(const QPen &pen);
+    void brushChanged(const QBrush &brush);
+    void fontChanged(const QFont &font);
+
+public slots:
+    void slotPenChanged();
+    void slotBrushChanged();
+    void slotFontChanged();
+    void initWithItem(QGraphicsItem *selectItem);
 
 private:
     QPen moPen;

@@ -92,5 +92,6 @@ void XYMovableGraphicsItem::duringCreateItem(const QPointF &pos)
 void XYMovableGraphicsItem::endCreateItem(const QPointF &pos)
 {
     endPos = pos;
+    selected = true;
     creating = false;
 }

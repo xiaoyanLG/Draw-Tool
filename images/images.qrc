@@ -16,5 +16,6 @@
         <file>zoomdown.ico</file>
         <file>zoomup.ico</file>
         <file>drawtool.ico</file>
+        <file>stick.ico</file>
     </qresource>
 </RCC>

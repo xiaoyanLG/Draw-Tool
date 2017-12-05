@@ -32,6 +32,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     view->installEventFilter(this);
     setAcceptDrops(true);
+    connect(scene, SIGNAL(selectItemChanged(QGraphicsItem*)),
+            XYPenSettingWidget::getInstance(), SLOT(initWithItem(QGraphicsItem*)));
+    connect(XYPenSettingWidget::getInstance(), SIGNAL(penChanged(QPen)),
+            scene, SLOT(slotPenChanged(QPen)));
+    connect(XYPenSettingWidget::getInstance(), SIGNAL(brushChanged(QBrush)),
+            scene, SLOT(slotBrushChanged(QBrush)));
+    connect(XYPenSettingWidget::getInstance(), SIGNAL(fontChanged(QFont)),
+            scene, SLOT(slotFontChanged(QFont)));
 }
 
 MainWindow::~MainWindow()
@@ -227,6 +235,12 @@ void MainWindow::initToolBar()
     act->setToolTip(QStringLiteral("打开图片"));
     act = bar->addAction(QIcon(":/save.ico"), QString("Save File"), this, SLOT(savePixmap()));
     act->setToolTip(QStringLiteral("保存图片"));
+    act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));
+    act->setToolTip(QStringLiteral("移动图元"));
+    act->setCheckable(true);
+    act->setChecked(true);
+    scene->setShape(XYGraphicsScene::CURSOR);
+    shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/rect.ico"), QString("Rect"));
     act->setToolTip(QStringLiteral("绘制矩形"));
     act->setCheckable(true);
@@ -255,16 +269,9 @@ void MainWindow::initToolBar()
     act->setToolTip(QStringLiteral("插入图片模式下，直接拖拽图片进入窗口即可！"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
-    act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));
-    act->setToolTip(QStringLiteral("选中并可以移动图元"));
-    act->setCheckable(true);
-    act->setChecked(true);
-    scene->setShape(XYGraphicsScene::CURSOR);
-    shapeGroup->addAction(act);
-    act = bar->addAction(QIcon(":/delete.ico"), QString("Delete"));
-    act->setToolTip(QStringLiteral("删除图元"));
-    act->setCheckable(true);
-    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/stick.ico"), QString("Stick"),
+                         scene, SLOT(stickItem()));
+    act->setToolTip(QStringLiteral("图元置顶"));
     act = bar->addAction(QIcon(":/zoomup.ico"), QString("Zoom Up"),
                          scene, SLOT(zoomUpItem()));
     act->setToolTip(QStringLiteral("放大图元"));
@@ -274,6 +281,10 @@ void MainWindow::initToolBar()
     act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"),
                          this, SLOT(settingPen()));
     act->setToolTip(QStringLiteral("设置画笔画刷字体"));
+    act = bar->addAction(QIcon(":/delete.ico"), QString("Delete"));
+    act->setToolTip(QStringLiteral("删除图元"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
 
     connect(shapeGroup, SIGNAL(triggered(QAction *)),
             this, SLOT(setShape(QAction *)));

@@ -1,4 +1,5 @@
 ﻿#include "xygraphicsscene.h"
+#include "xycanvasgraphicsitem.h"
 #include "xyrectgraphicsitem.h"
 #include "xypathgraphicsitem.h"
 #include "xyellipsegraphicsitem.h"
@@ -15,6 +16,7 @@ XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QO
 {
     meShape = CURSOR;
     haveKeyboardItem = NULL;
+    selectItem = NULL;
     textEdit = NULL;
 }
 
@@ -87,6 +89,8 @@ void XYGraphicsScene::showTextEdit(XYTextGraphicsItem *item)
         {
             y_offset = (y_offset - height()) / 2;
         }
+        x_offset = x_offset * item->scale();
+        y_offset = y_offset * item->scale();
         textEdit->resize(item->sceneBoundingRect().width(),
                          item->sceneBoundingRect().height());
         textEdit->move(item->sceneBoundingRect().x() + x_offset,
@@ -97,14 +101,42 @@ void XYGraphicsScene::showTextEdit(XYTextGraphicsItem *item)
     }
 }
 
+void XYGraphicsScene::stickItem()
+{
+    static int z = 1;
+    if (selectItem)
+    {
+        selectItem->setZValue(z++);
+    }
+}
+
 void XYGraphicsScene::zoomUpItem()
 {
-
+    if (selectItem)
+    {
+        if (textEdit != NULL && !textEdit->isHidden())
+        {
+            textEdit->setVisible(false);
+        }
+        selectItem->setScale(selectItem->scale() + 0.02);
+    }
 }
 
 void XYGraphicsScene::zoomDownItem()
 {
-
+    if (selectItem)
+    {
+        if (textEdit != NULL && !textEdit->isHidden())
+        {
+            textEdit->setVisible(false);
+        }
+        qreal cur = selectItem->scale() - 0.02;
+        if (cur < 0)
+        {
+            cur = 0;
+        }
+        selectItem->setScale(cur);
+    }
 }
 
 void XYGraphicsScene::setItemText()
@@ -112,6 +144,46 @@ void XYGraphicsScene::setItemText()
     if (textEdit != NULL && haveKeyboardItem != NULL)
     {
         ((XYTextGraphicsItem *)haveKeyboardItem)->msText = textEdit->toPlainText();
+    }
+}
+
+void XYGraphicsScene::slotPenChanged(const QPen &pen)
+{
+    if (selectItem != NULL
+            && (selectItem->type() == XYMovableGraphicsItem::XYSHAPE
+                || selectItem->type() == XYMovableGraphicsItem::XYSHAPEMOVABLE
+                || selectItem->type() == XYMovableGraphicsItem::XYTEXT))
+    {
+        XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
+        item->setPen(pen);
+    }
+}
+
+void XYGraphicsScene::slotBrushChanged(const QBrush &brush)
+{
+    if (selectItem != NULL
+            && (selectItem->type() == XYMovableGraphicsItem::XYSHAPE
+                || selectItem->type() == XYMovableGraphicsItem::XYSHAPEMOVABLE
+                || selectItem->type() == XYMovableGraphicsItem::XYTEXT))
+    {
+        XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
+        item->setBrush(brush);
+    }
+}
+
+void XYGraphicsScene::slotFontChanged(const QFont &font)
+{
+    if (textEdit != NULL && !textEdit->isHidden())
+    {
+        textEdit->setFont(font);
+    }
+    if (selectItem != NULL
+            && (selectItem->type() == XYMovableGraphicsItem::XYSHAPE
+                || selectItem->type() == XYMovableGraphicsItem::XYSHAPEMOVABLE
+                || selectItem->type() == XYMovableGraphicsItem::XYTEXT))
+    {
+        XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
+        item->setFont(font);
     }
 }
 
@@ -145,6 +217,7 @@ bool XYGraphicsScene::event(QEvent *event)
                 item = NULL;
             }
         }
+        event->accept();
     }
     else if (event->type() == QEvent::GraphicsSceneMouseRelease)
     {
@@ -158,6 +231,14 @@ bool XYGraphicsScene::event(QEvent *event)
                 {
                     this->addItem(item);
                     setGraphicsItemEndPos(item, mouse_event->scenePos());
+                    if (selectItem != NULL
+                            && (selectItem->type() == XYMovableGraphicsItem::XYSHAPE
+                                || selectItem->type() == XYMovableGraphicsItem::XYSHAPEMOVABLE
+                                || selectItem->type() == XYMovableGraphicsItem::XYTEXT))
+                    {
+                        ((XYMovableGraphicsItem *)selectItem)->selected = false;
+                    }
+                    selectItem = item;
                 }
                 else
                 {
@@ -166,6 +247,7 @@ bool XYGraphicsScene::event(QEvent *event)
                 item = NULL;
             }
         }
+        event->accept();
     }
     else if (event->type() == QEvent::GraphicsSceneMouseMove)
     {
@@ -174,9 +256,25 @@ bool XYGraphicsScene::event(QEvent *event)
             setGraphicsItemMovePos(item, mouse_event->scenePos());
             update(this->sceneRect());
         }
+        event->accept();
     }
-    event->accept();
     return true;
+}
+
+void XYGraphicsScene::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+    if (selectItem != NULL)
+    {
+        if (event->delta() > 0)
+        {
+            zoomUpItem();
+        }
+        else
+        {
+            zoomDownItem();
+        }
+        event->accept();
+    }
 }
 
 void XYGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -198,6 +296,16 @@ void XYGraphicsScene::mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent)
 void XYGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
     QGraphicsItem *item = itemAt(mouseEvent->scenePos(), QTransform());
+    if (item != NULL && item->type() == XYCanvasGraphicsItem::XYCANVAS)
+    {
+        item = NULL;
+    }
+
+    if (selectItem != item)
+    {
+        emit selectItemChanged(item);
+    }
+    selectItem = item;
 
     switch (meShape)
     {
@@ -206,34 +314,41 @@ void XYGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         {
             removeItem(item);
             delete item;
+            selectItem = NULL;
         }
         return;
     default:
         break;
     }
-    if (item &&
-        item->type() == XYTextGraphicsItem::XYTEXT)
-    {
-        haveKeyboardItem = (XYTextGraphicsItem *)item;
-        if (meShape != CURSOR)
-        {
-            showTextEdit(haveKeyboardItem);
-        }
-    }
-    else if (textEdit != NULL && !textEdit->isHidden())
+
+    if (textEdit != NULL && !textEdit->isHidden())
     {
         textEdit->setVisible(false);
     }
 
-    if (!(qApp->keyboardModifiers() & Qt::ControlModifier))
+    // 去掉非点击item选中
+    QList<QGraphicsItem *> items = this->items();
+    for (int i = 0; i < items.size(); ++i)
     {
-        QList<QGraphicsItem *> items = this->items();
-        for (int i = 0; i < items.size(); ++i)
+        switch (items.at(i)->type())
         {
+        case XYMovableGraphicsItem::XYSHAPE:
+        case XYMovableGraphicsItem::XYSHAPEMOVABLE:
+        case XYMovableGraphicsItem::XYTEXT:
             if (items.at(i) != item)
             {
                 ((XYMovableGraphicsItem *)items.at(i))->selected = false;
             }
+            else if (items.at(i) == item)
+            {
+                ((XYMovableGraphicsItem *)items.at(i))->selected = true;
+            }
+
+        break;
+        case XYCanvasGraphicsItem::XYCANVAS:
+            break;
+        default:
+            break;
         }
     }
     update(sceneRect());

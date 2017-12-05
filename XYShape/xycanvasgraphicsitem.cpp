@@ -29,3 +29,8 @@ void XYCanvasGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIt
     int y = (scene()->sceneRect().height() - backImage.height()) / 2;
     painter->drawPixmap(x, y, backImage);
 }
+
+int XYCanvasGraphicsItem::type() const
+{
+    return XYCANVAS;
+}

@@ -49,9 +49,11 @@ void XYTextGraphicsItem::endCreateItem(const QPointF &pos)
     }
 }
 
-void XYTextGraphicsItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
+void XYTextGraphicsItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    XYMovableGraphicsItem::mousePressEvent(event);
-    selected = true;
-    event->accept();
+    if (scene() != NULL)
+    {
+        ((XYGraphicsScene *)scene())->showTextEdit(this);
+    }
+    mouseEvent->accept();
 }

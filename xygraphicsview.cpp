@@ -1,6 +1,5 @@
 ﻿#include "xygraphicsview.h"
 #include <QWheelEvent>
-#include <QTime>
 
 XYGraphicsView::XYGraphicsView(QGraphicsScene *scene)
     : QGraphicsView(scene)
@@ -15,6 +14,11 @@ XYGraphicsView::~XYGraphicsView()
 
 void XYGraphicsView::wheelEvent(QWheelEvent *event)
 {
+    QGraphicsView::wheelEvent(event);
+    if (event->isAccepted())
+    {
+        return;
+    }
     qreal unit = 0.02;
     QMatrix mat = matrix();
     if (event->delta() > 0)

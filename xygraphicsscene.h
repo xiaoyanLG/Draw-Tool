@@ -22,13 +22,21 @@ public:
     void savePixmap(const QString &path);
     void showTextEdit(XYTextGraphicsItem *item);
 
+signals:
+    void selectItemChanged(QGraphicsItem *selectItem);
+
 public slots:
+    void stickItem();
     void zoomUpItem();
     void zoomDownItem();
     void setItemText();
+    void slotPenChanged(const QPen &pen);
+    void slotBrushChanged(const QBrush &brush);
+    void slotFontChanged(const QFont &font);
 
 protected:
     bool event(QEvent *event);
+    void wheelEvent(QGraphicsSceneWheelEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
@@ -45,6 +53,7 @@ private:
     SHAPE meShape;
     QTextEdit *textEdit;
     XYTextGraphicsItem *haveKeyboardItem;
+    QGraphicsItem *selectItem;
 };
 
 #endif // XYGRAPHICSSCENE_H
