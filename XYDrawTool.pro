@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     XYShape/xyarrowsgraphicsitem.cpp \
     XYShape/xytextgraphicsitem.cpp \
     xymovablewidget.cpp \
-    xypensettingwidget.cpp
+    xypensettingwidget.cpp \
+    XYShape/xypixmapgraphicsitem.cpp
 
 HEADERS  += \
     xygraphicsview.h \
@@ -43,7 +44,11 @@ HEADERS  += \
     XYShape/xyarrowsgraphicsitem.h \
     XYShape/xytextgraphicsitem.h \
     xymovablewidget.h \
-    xypensettingwidget.h
+    xypensettingwidget.h \
+    XYShape/xypixmapgraphicsitem.h \
+    version.h
 
 RESOURCES += \
     images/images.qrc
+
+RC_FILE = ico.rc

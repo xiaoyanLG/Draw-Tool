@@ -10,7 +10,7 @@ class XYGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, TEXT, CURSOR, DELETE};
+    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, TEXT, PIXMAP, CURSOR, DELETE};
     explicit XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent = Q_NULLPTR);
     ~XYGraphicsScene();
     SHAPE getShape();
@@ -18,10 +18,13 @@ public:
     void setItemMovable(bool movable);
 
     void setTextEdit(QTextEdit *textEdit);
+    void addPixmapItem(const QString &file, const QPointF &pos);
     void savePixmap(const QString &path);
     void showTextEdit(XYTextGraphicsItem *item);
 
 public slots:
+    void zoomUpItem();
+    void zoomDownItem();
     void setItemText();
 
 protected:

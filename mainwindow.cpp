@@ -10,6 +10,7 @@
 #include <QToolBar>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QPushButton>
 #include <QDragEnterEvent>
 #include <QMimeData>
 #include <QGraphicsTextItem>
@@ -66,6 +67,10 @@ void MainWindow::setShape(QAction *act)
         else if (act->text() == "Text")
         {
             scene->setShape(XYGraphicsScene::TEXT);
+        }
+        else if (act->text() == "Pixmap")
+        {
+            scene->setShape(XYGraphicsScene::PIXMAP);
         }
         else if (act->text() == "Cursor")
         {
@@ -144,11 +149,29 @@ void MainWindow::settingPen()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (QMessageBox::question(this, QStringLiteral("确认"), QStringLiteral("是否需要保存当前图片？"))
-            == QMessageBox::Yes)
-    {
+    QMessageBox box;
+    box.setWindowTitle(QStringLiteral("退出确认"));
+    box.setText(QStringLiteral("是否需要保存当前图片？"));
+    box.addButton(QMessageBox::Yes)->setText(QStringLiteral("是"));
+    box.addButton(QMessageBox::No)->setText(QStringLiteral("否"));
+    box.addButton(QMessageBox::Ignore)->setText(QStringLiteral("忽略"));
+    int ret = box.exec();
+    switch (ret) {
+    case QMessageBox::Yes:
         savePixmap();
+        break;
+    case QMessageBox::No:
+        event->accept();
+        break;
+    case QMessageBox::Ignore:
+        event->ignore();
+        return;
+        break;
+    default:
+        // should never be reached
+        break;
     }
+
     QMainWindow::closeEvent(event);
 }
 
@@ -171,8 +194,16 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
                 }
                 else
                 {
-                    QString path = urlList.at(0).toLocalFile();
-                    openPixmap(path);
+                    if (scene->getShape() == XYGraphicsScene::PIXMAP)
+                    {
+                        QString path = urlList.at(0).toLocalFile();
+                        scene->addPixmapItem(path, drag->posF());
+                    }
+                    else
+                    {
+                        QString path = urlList.at(0).toLocalFile();
+                        openPixmap(path);
+                    }
                 }
             }
             return true;
@@ -193,37 +224,59 @@ void MainWindow::initToolBar()
     QActionGroup *shapeGroup = new QActionGroup(this);
 
     QAction *act = bar->addAction(QIcon(":/open.ico"), QString("Open File"), this, SLOT(openPixmap()));
+    act->setToolTip(QStringLiteral("打开图片"));
     act = bar->addAction(QIcon(":/save.ico"), QString("Save File"), this, SLOT(savePixmap()));
-
+    act->setToolTip(QStringLiteral("保存图片"));
     act = bar->addAction(QIcon(":/rect.ico"), QString("Rect"));
+    act->setToolTip(QStringLiteral("绘制矩形"));
     act->setCheckable(true);
-    act->setChecked(true);
-    scene->setShape(XYGraphicsScene::RECT);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/ellipse.ico"), QString("Ellipse"));
+    act->setToolTip(QStringLiteral("绘制椭圆"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/arrows.ico"), QString("Arrows"));
+    act->setToolTip(QStringLiteral("绘制箭头"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/line.ico"), QString("Line"));
+    act->setToolTip(QStringLiteral("绘制直线"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/draw.ico"), QString("Path"));
+    act->setToolTip(QStringLiteral("绘制自定义曲线"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/text.ico"), QString("Text"));
+    act->setToolTip(QStringLiteral("绘制文本"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/pixmap.ico"), QString("Pixmap"));
+    act->setToolTip(QStringLiteral("插入图片模式下，直接拖拽图片进入窗口即可！"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/cursor.ico"), QString("Cursor"));
+    act->setToolTip(QStringLiteral("选中并可以移动图元"));
     act->setCheckable(true);
+    act->setChecked(true);
+    scene->setShape(XYGraphicsScene::CURSOR);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/delete.ico"), QString("Delete"));
+    act->setToolTip(QStringLiteral("删除图元"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
-    act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"), this, SLOT(settingPen()));
+    act = bar->addAction(QIcon(":/zoomup.ico"), QString("Zoom Up"),
+                         scene, SLOT(zoomUpItem()));
+    act->setToolTip(QStringLiteral("放大图元"));
+    act = bar->addAction(QIcon(":/zoomdown.ico"), QString("Zoom Down"),
+                         scene, SLOT(zoomDownItem()));
+    act->setToolTip(QStringLiteral("缩小图元"));
+    act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"),
+                         this, SLOT(settingPen()));
+    act->setToolTip(QStringLiteral("设置画笔画刷字体"));
 
-    connect(shapeGroup, SIGNAL(triggered(QAction *)), this, SLOT(setShape(QAction *)));
+    connect(shapeGroup, SIGNAL(triggered(QAction *)),
+            this, SLOT(setShape(QAction *)));
 
     addToolBar(bar);
 }

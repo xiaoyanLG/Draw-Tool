@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>backimage.jpg</file>
-        <file>test.png</file>
         <file>draw.ico</file>
         <file>ellipse.ico</file>
         <file>rect.ico</file>
@@ -13,5 +12,9 @@
         <file>text.ico</file>
         <file>delete.ico</file>
         <file>settingpen.ico</file>
+        <file>pixmap.ico</file>
+        <file>zoomdown.ico</file>
+        <file>zoomup.ico</file>
+        <file>drawtool.ico</file>
     </qresource>
 </RCC>

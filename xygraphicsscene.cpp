@@ -5,6 +5,7 @@
 #include "xylinegraphicsitem.h"
 #include "xyarrowsgraphicsitem.h"
 #include "xytextgraphicsitem.h"
+#include "xypixmapgraphicsitem.h"
 #include "xypensettingwidget.h"
 #include <QGraphicsView>
 #include <QApplication>
@@ -12,7 +13,7 @@
 XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent)
     : QGraphicsScene(x, y, width, height, parent)
 {
-    meShape = ELLIPSE;
+    meShape = CURSOR;
     haveKeyboardItem = NULL;
     textEdit = NULL;
 }
@@ -44,6 +45,17 @@ void XYGraphicsScene::setTextEdit(QTextEdit *textEdit)
     {
         this->textEdit->setVisible(false);
         connect(this->textEdit, SIGNAL(textChanged()), this, SLOT(setItemText()));
+    }
+}
+
+void XYGraphicsScene::addPixmapItem(const QString &file, const QPointF &pos)
+{
+    QPixmap pixmap(file);
+    if (!pixmap.isNull())
+    {
+        XYPixmapGraphicsItem *item = new XYPixmapGraphicsItem(pixmap);
+        item->setPos(pos - QPointF(pixmap.width() / 2, pixmap.height()));
+        this->addItem(item);
     }
 }
 
@@ -83,6 +95,16 @@ void XYGraphicsScene::showTextEdit(XYTextGraphicsItem *item)
         textEdit->setFocus();
         textEdit->setVisible(true);
     }
+}
+
+void XYGraphicsScene::zoomUpItem()
+{
+
+}
+
+void XYGraphicsScene::zoomDownItem()
+{
+
 }
 
 void XYGraphicsScene::setItemText()
@@ -258,6 +280,13 @@ XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
         break;
     case TEXT:
         item = new XYTextGraphicsItem;
+        if (textEdit != NULL)
+        {
+            textEdit->setTextColor(getCurPen().color());
+            textEdit->setFont(getCurFont());
+        }
+        break;
+    case PIXMAP:
         break;
     default:
         break;
@@ -268,11 +297,6 @@ XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
         item->setPen(getCurPen());
         item->setFont(getCurFont());
         item->setBrush(getCurBrush());
-        if (textEdit != NULL)
-        {
-            textEdit->setTextColor(getCurPen().color());
-            textEdit->setFont(getCurFont());
-        }
     }
     return item;
 }

@@ -13,6 +13,7 @@ public:
     void paint(QPainter *painter,
                const QStyleOptionGraphicsItem *option,
                QWidget *w) Q_DECL_OVERRIDE;
+
 private:
     QRectF moRect;
 
