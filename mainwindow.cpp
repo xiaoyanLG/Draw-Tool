@@ -158,6 +158,7 @@ void MainWindow::settingPen()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     QMessageBox box;
+    box.setIcon(QMessageBox::Question);
     box.setWindowTitle(QStringLiteral("退出确认"));
     box.setText(QStringLiteral("是否需要保存当前图片？"));
     box.addButton(QMessageBox::Yes)->setText(QStringLiteral("是"));
