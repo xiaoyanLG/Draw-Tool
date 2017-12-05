@@ -275,12 +275,18 @@ void MainWindow::initToolBar()
     act->setToolTip(QStringLiteral("图元置顶"));
     act = bar->addAction(QIcon(":/zoomup.ico"), QString("Zoom Up"),
                          scene, SLOT(zoomUpItem()));
+    act->setAutoRepeat(true);
+    act->setShortcut(QKeySequence(tr("Ctrl+U")));
     act->setToolTip(QStringLiteral("放大图元"));
     act = bar->addAction(QIcon(":/zoomdown.ico"), QString("Zoom Down"),
                          scene, SLOT(zoomDownItem()));
+    act->setAutoRepeat(true);
+    act->setShortcut(QKeySequence(tr("Ctrl+D")));
     act->setToolTip(QStringLiteral("缩小图元"));
     act = bar->addAction(QIcon(":/rotation.ico"), QString("Rotation"),
                          scene, SLOT(rotationItem()));
+    act->setAutoRepeat(true);
+    act->setShortcut(QKeySequence(tr("Ctrl+R")));
     act->setToolTip(QStringLiteral("旋转图元"));
     act = bar->addAction(QIcon(":/settingpen.ico"), QString("SettingPen"),
                          this, SLOT(settingPen()));
