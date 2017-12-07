@@ -22,6 +22,7 @@ public:
     virtual bool isValid();
     int type() const;
 
+    QPen  getPaintPen() const;
     QFont getFont() const;
     void setFont(const QFont &value);
 
@@ -34,6 +35,7 @@ public:
 
     bool   creating;
     QFont  moFont;
+    QPen   paintPen;
 
 };
 

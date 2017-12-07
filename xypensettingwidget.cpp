@@ -203,7 +203,7 @@ void XYPenSettingWidget::initWithItem(QGraphicsItem *selectItem)
     {
         XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
         emitSignal = false;
-        setMoPen(item->pen());
+        setMoPen(item->getPaintPen());
         setMoBrush(item->brush());
         setMoFont(item->getFont());
         emitSignal = true;

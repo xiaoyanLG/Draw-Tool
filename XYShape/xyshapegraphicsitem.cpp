@@ -17,6 +17,7 @@ void XYShapeGraphicsItem::paint(QPainter *painter,
 {
     painter->setRenderHints(QPainter::Antialiasing);
     QPen pen = this->pen();
+    paintPen = this->pen();
     if (option->state & QStyle::State_MouseOver
             || creating)
     {
@@ -36,6 +37,11 @@ bool XYShapeGraphicsItem::isValid()
 int XYShapeGraphicsItem::type() const
 {
     return XYSHAPE;
+}
+
+QPen XYShapeGraphicsItem::getPaintPen() const
+{
+    return paintPen;
 }
 
 QLineF XYShapeGraphicsItem::getEllipseAndLineNodes(qreal k, qreal b, qreal c, qreal d, qreal r)
