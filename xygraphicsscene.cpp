@@ -18,6 +18,7 @@ XYGraphicsScene::XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QO
     haveKeyboardItem = NULL;
     selectItem = NULL;
     textEdit = NULL;
+    setItemIndexMethod(QGraphicsScene::NoIndex); // 这个函数必须调，不然会导致程序异常
 }
 
 XYGraphicsScene::~XYGraphicsScene()
