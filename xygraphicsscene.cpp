@@ -169,6 +169,11 @@ void XYGraphicsScene::setItemText()
 
 void XYGraphicsScene::slotPenChanged(const QPen &pen)
 {
+    if (textEdit != NULL && !textEdit->isHidden())
+    {
+        textEdit->setTextColor(pen.color());
+        textEdit->setPlainText(textEdit->toPlainText());
+    }
     if (selectItem != NULL
             && (selectItem->type() == XYMovableGraphicsItem::XYSHAPE
                 || selectItem->type() == XYMovableGraphicsItem::XYSHAPEMOVABLE
@@ -176,6 +181,7 @@ void XYGraphicsScene::slotPenChanged(const QPen &pen)
     {
         XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
         item->setPen(pen);
+        item->update();
     }
 }
 
@@ -188,6 +194,7 @@ void XYGraphicsScene::slotBrushChanged(const QBrush &brush)
     {
         XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
         item->setBrush(brush);
+        item->update();
     }
 }
 
@@ -204,6 +211,7 @@ void XYGraphicsScene::slotFontChanged(const QFont &font)
     {
         XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
         item->setFont(font);
+        item->update();
     }
 }
 
