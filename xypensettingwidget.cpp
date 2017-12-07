@@ -12,7 +12,7 @@ XYPenSettingWidget *XYPenSettingWidget::getInstance()
 }
 
 XYPenSettingWidget::XYPenSettingWidget(QWidget *parent)
-    : XYMovableWidget(parent)
+    : XYMovableWidget(parent), emitSignal(true)
 {
     this->setWindowFlags(Qt::FramelessWindowHint
                          | Qt::WindowType_Mask);
@@ -170,19 +170,28 @@ void XYPenSettingWidget::setMoBrush(const QBrush &value)
 void XYPenSettingWidget::slotPenChanged()
 {
     getMoPen();
-    emit penChanged(moPen);
+    if (emitSignal)
+    {
+        emit penChanged(moPen);
+    }
 }
 
 void XYPenSettingWidget::slotBrushChanged()
 {
     getMoBrush();
-    emit brushChanged(moBrush);
+    if (emitSignal)
+    {
+        emit brushChanged(moBrush);
+    }
 }
 
 void XYPenSettingWidget::slotFontChanged()
 {
     getMoFont();
-    emit fontChanged(moFont);
+    if (emitSignal)
+    {
+        emit fontChanged(moFont);
+    }
 }
 
 void XYPenSettingWidget::initWithItem(QGraphicsItem *selectItem)
@@ -193,9 +202,11 @@ void XYPenSettingWidget::initWithItem(QGraphicsItem *selectItem)
                 || selectItem->type() == XYMovableGraphicsItem::XYTEXT))
     {
         XYShapeGraphicsItem *item = (XYShapeGraphicsItem *)selectItem;
+        emitSignal = false;
         setMoPen(item->pen());
         setMoBrush(item->brush());
         setMoFont(item->getFont());
+        emitSignal = true;
     }
 }
 

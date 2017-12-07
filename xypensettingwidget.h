@@ -84,6 +84,8 @@ private:
     QFontComboBox *selectFonts;
     QSlider *sizeBox;
 
+    bool  emitSignal;
+
 };
 
 #endif // XYPENSETTINGWIDGET_H
