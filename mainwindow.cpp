@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     view = new XYGraphicsView(scene);
     scene->setTextEdit(new QTextEdit(view));
     canvas = new XYCanvasGraphicsItem;
+    canvas->setZValue(-1);
 
     view->scene()->setBackgroundBrush(QPixmap(":/backimage.jpg"));
 
