@@ -1,6 +1,7 @@
 ﻿#include "xygraphicsscene.h"
 #include "xycanvasgraphicsitem.h"
 #include "xyrectgraphicsitem.h"
+#include "xypolygongraphicsitem.h"
 #include "xypathgraphicsitem.h"
 #include "xyellipsegraphicsitem.h"
 #include "xylinegraphicsitem.h"
@@ -209,10 +210,19 @@ void XYGraphicsScene::slotFontChanged(const QFont &font)
 bool XYGraphicsScene::event(QEvent *event)
 {
     static XYMovableGraphicsItem *item = NULL;
+
     QGraphicsScene::event(event);
     if (event->isAccepted())
     {
+        if (meShape == POLYGON)
+        {
+            return paintPolygon(event);
+        }
         return true;
+    }
+    if (meShape == POLYGON)
+    {
+        return paintPolygon(event);
     }
 
     QGraphicsSceneMouseEvent *mouse_event = (QGraphicsSceneMouseEvent *)event;
@@ -374,6 +384,50 @@ void XYGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QGraphicsScene::mousePressEvent(mouseEvent);
 }
 
+bool XYGraphicsScene::paintPolygon(QEvent *event)
+{
+    static XYPolygonGraphicsitem *item = NULL;
+    QGraphicsSceneMouseEvent *mouse_event = (QGraphicsSceneMouseEvent *)event;
+    if (event->type() == QEvent::GraphicsSceneMousePress)
+    {
+        if (mouse_event->button() == Qt::LeftButton)
+        {
+            if (item == NULL)
+            {
+                item = (XYPolygonGraphicsitem *)getCurDrawshapeItem();
+                if (item)
+                {
+                    this->addItem(item);
+                    setGraphicsItemStartPos(item, mouse_event->scenePos());
+                }
+            }
+            else
+            {
+                item->allPoints.append(mouse_event->scenePos());
+            }
+        }
+        else if (mouse_event->button() == Qt::RightButton)
+        {
+            if (item != NULL)
+            {
+                setGraphicsItemEndPos(item, mouse_event->scenePos());
+                this->removeItem(item);
+                this->addItem(item);
+                item = NULL;
+            }
+        }
+    }
+    else if (event->type() == QEvent::GraphicsSceneMouseMove)
+    {
+        if (item != NULL)
+        {
+            item->endPos = mouse_event->scenePos();
+            update(sceneRect());
+        }
+    }
+    return true;
+}
+
 QPen XYGraphicsScene::getCurPen()
 {
     XYPenSettingWidget *penSetting = XYPenSettingWidget::getInstance();
@@ -399,6 +453,9 @@ XYMovableGraphicsItem *XYGraphicsScene::getCurDrawshapeItem()
     {
     case RECT:
         item = new XYRectGraphicsItem;
+        break;
+    case POLYGON:
+        item = new XYPolygonGraphicsitem;
         break;
     case PATH:
         item = new XYPathGraphicsItem;
@@ -454,8 +511,9 @@ void XYGraphicsScene::setGraphicsItemStartPos(XYMovableGraphicsItem *item, const
     case TEXT:
         break;
     case ARROWS:
+    case POLYGON:
     {
-        XYArrowsGraphicsItem *arrowsItem = static_cast<XYArrowsGraphicsItem *>(item);
+        XYMovableGraphicsItem *arrowsItem = static_cast<XYMovableGraphicsItem *>(item);
         arrowsItem->endPos = pos;
         break;
     }
@@ -492,6 +550,15 @@ void XYGraphicsScene::setGraphicsItemMovePos(XYMovableGraphicsItem *item, const 
                                       qMin(rectItem->startPos.y(), pos.y()),
                                       qAbs(rectItem->startPos.x() - pos.x()),
                                       qAbs(rectItem->startPos.y() - pos.y()));
+        }
+        break;
+    }
+    case POLYGON:
+    {
+        XYPolygonGraphicsitem *pathItem = static_cast<XYPolygonGraphicsitem *>(item);
+        if (pathItem)
+        {
+            pathItem->allPoints.append(pos);
         }
         break;
     }

@@ -10,7 +10,7 @@ class XYGraphicsScene : public QGraphicsScene
 {
     Q_OBJECT
 public:
-    enum SHAPE{RECT, PATH, ELLIPSE, LINE, ARROWS, TEXT, PIXMAP, CURSOR, DELETE};
+    enum SHAPE{RECT, POLYGON, PATH, ELLIPSE, LINE, ARROWS, TEXT, PIXMAP, CURSOR, DELETE};
     explicit XYGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent = Q_NULLPTR);
     ~XYGraphicsScene();
     SHAPE getShape();
@@ -40,6 +40,8 @@ protected:
     void wheelEvent(QGraphicsSceneWheelEvent *event);
     void mouseMoveEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
+
+    bool paintPolygon(QEvent *event);
 
 private:
     QPen getCurPen();

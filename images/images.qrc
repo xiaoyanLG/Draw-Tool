@@ -18,5 +18,6 @@
         <file>drawtool.ico</file>
         <file>stick.ico</file>
         <file>rotation.ico</file>
+        <file>polygon.ico</file>
     </qresource>
 </RCC>

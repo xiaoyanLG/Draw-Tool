@@ -56,6 +56,10 @@ void MainWindow::setShape(QAction *act)
         {
             scene->setShape(XYGraphicsScene::RECT);
         }
+        else if (act->text() == "Polygon")
+        {
+            scene->setShape(XYGraphicsScene::POLYGON);
+        }
         else if (act->text() == "Path")
         {
             scene->setShape(XYGraphicsScene::PATH);
@@ -244,6 +248,10 @@ void MainWindow::initToolBar()
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/rect.ico"), QString("Rect"));
     act->setToolTip(QStringLiteral("绘制矩形"));
+    act->setCheckable(true);
+    shapeGroup->addAction(act);
+    act = bar->addAction(QIcon(":/polygon.ico"), QString("Polygon"));
+    act->setToolTip(QStringLiteral("绘制多边形"));
     act->setCheckable(true);
     shapeGroup->addAction(act);
     act = bar->addAction(QIcon(":/ellipse.ico"), QString("Ellipse"));

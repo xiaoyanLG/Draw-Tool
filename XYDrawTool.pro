@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     XYShape/xytextgraphicsitem.cpp \
     xymovablewidget.cpp \
     xypensettingwidget.cpp \
-    XYShape/xypixmapgraphicsitem.cpp
+    XYShape/xypixmapgraphicsitem.cpp \
+    XYShape/xypolygongraphicsitem.cpp
 
 HEADERS  += \
     xygraphicsview.h \
@@ -46,7 +47,8 @@ HEADERS  += \
     xymovablewidget.h \
     xypensettingwidget.h \
     XYShape/xypixmapgraphicsitem.h \
-    version.h
+    version.h \
+    XYShape/xypolygongraphicsitem.h
 
 RESOURCES += \
     images/images.qrc
