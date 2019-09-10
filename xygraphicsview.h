@@ -11,6 +11,7 @@ public:
     ~XYGraphicsView();
 
 protected:
+    void resizeEvent(QResizeEvent *event);
     void wheelEvent(QWheelEvent *event);
     void dragEnterEvent(QDragEnterEvent *event) Q_DECL_OVERRIDE;
 

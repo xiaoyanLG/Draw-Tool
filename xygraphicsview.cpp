@@ -12,6 +12,12 @@ XYGraphicsView::~XYGraphicsView()
 
 }
 
+void XYGraphicsView::resizeEvent(QResizeEvent *event)
+{
+    scene()->setSceneRect(QRect(QPoint(0, 0), event->size()));
+    QGraphicsView::resizeEvent(event);
+}
+
 void XYGraphicsView::wheelEvent(QWheelEvent *event)
 {
     QGraphicsView::wheelEvent(event);
